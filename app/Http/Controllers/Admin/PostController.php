@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
+use App\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class PostController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +23,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::orderBy('id', 'DESC')->paginate();
+        return view('admin.posts.index', compact('posts'));
     }
 
     /**
@@ -24,7 +34,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.posts.create');
     }
 
     /**
@@ -33,9 +43,11 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        //
+        $post = Post::create($request->all());
+        return redirect()->route('categories.edit', $post->id)
+            ->with('info', 'Entrada creada exitosamente');
     }
 
     /**
@@ -46,7 +58,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::find($id);
+        return view('admin.posts.show', compact('post'));
     }
 
     /**
@@ -57,7 +70,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+        return view('admin.posts.edit', compact('post'));
     }
 
     /**
@@ -67,9 +81,12 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CategoryUpdateRequest $request, $id)
     {
-        //
+        $post = Post::find($id);
+        $post->fill($request->all())->save();
+        return redirect()->route('posts.index', $post->id)
+            ->with('info', 'Entrada actualizada exitosamente');
     }
 
     /**
@@ -80,6 +97,7 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id)->delete();
+        return back()->with('info', 'La entrada ha sido eliminada exitosamente');
     }
 }

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Category;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
+use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\PostUpdateRequest;
 use App\Post;
+use App\Tag;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -23,7 +27,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('id', 'DESC')->paginate();
+        $posts = Post::orderBy('id', 'DESC')
+            ->where('user_id', auth()->user()->id)
+            ->paginate();
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -34,7 +40,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::orderBy('name', 'ASC')
+            ->pluck('name', 'id');
+        $tags = Tag::orderBy('name', 'ASC')->get();
+        return view('admin.posts.create', compact('categories', 'tags'));
     }
 
     /**
@@ -43,7 +52,7 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CategoryStoreRequest $request)
+    public function store(PostStoreRequest $request)
     {
         $post = Post::create($request->all());
         return redirect()->route('categories.edit', $post->id)
@@ -70,8 +79,11 @@ class PostController extends Controller
      */
     public function edit($id)
     {
+        $categories = Category::orderBy('name', 'ASC')
+            ->pluck('name', 'id');
+        $tags = Tag::orderBy('name', 'ASC')->get();
         $post = Post::find($id);
-        return view('admin.posts.edit', compact('post'));
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -81,7 +93,7 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CategoryUpdateRequest $request, $id)
+    public function update(PostUpdateRequest $request, $id)
     {
         $post = Post::find($id);
         $post->fill($request->all())->save();

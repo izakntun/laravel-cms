@@ -11,7 +11,7 @@
                     <div class="panel-body">
                         <p><strong>Nombre: </strong>{{ $post->name }}</p>
                         <p><strong>Slug: </strong>{{ $post->slug }}</p>
-                        <p><strong>Contenido: </strong>{{ $post->body }}</p>
+                        <p><strong>Contenido: </strong>{!! $post->body !!} </p>
                         <div class="form-group">
                             {{ Html::link('/posts', 'Volver a tus entradas', ['class' => 'btn btn-sm btn-default']) }}
                         </div>

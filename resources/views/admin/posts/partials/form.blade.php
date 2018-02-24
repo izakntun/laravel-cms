@@ -28,6 +28,7 @@
     {{ Form::label('tags', 'Etiquetas') }}
     <div>
         @foreach($tags as $tag)
+
             <label>
                 {{ Form::checkbox('tags[]', $tag->id) }} {{ $tag->name }}
             </label>
@@ -68,4 +69,4 @@
         CKEDITOR.replace('body');
     </script>
 @endsection
-{{-- continuar el curso en el video 18 --}}
+{{-- continuar el curso en el video 23 --}}
